@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
+using Read;
 using Write;
 using Write.CommandHandlers;
-using Write.Commands;
 
 namespace CqrsLunchAndLearn
 {
@@ -11,41 +10,50 @@ namespace CqrsLunchAndLearn
     {
         static void Main(string[] args)
         {
-            var queries = new[]
-            {
-                "Q Test",
-                "Q Test 2"
-            };
-
             Console.WriteLine("Welcome to this Lunch & Learn" + Environment.NewLine);
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Available commands are: {Environment.NewLine}{string.Join(Environment.NewLine, GetCommands())}");
+            Console.WriteLine($"Available commands are: {Environment.NewLine}{string.Join(Environment.NewLine, GetTypes(typeof(ICommand)))}");
             Console.WriteLine(Environment.NewLine);
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"Available queries are: {Environment.NewLine}{string.Join(Environment.NewLine, queries)}");
+            Console.WriteLine($"Available queries are: {Environment.NewLine}{string.Join(Environment.NewLine, GetTypes(typeof(IQuery)))}");
 
             Console.ForegroundColor = ConsoleColor.White;
 
-            new BecomeCustomerCommandHandler().Handle(new BecomeCustomerCommand("foo.bar@gmail.com", "wozzaa"));
-            new AddCreditCardCommandHandler().Handle(new AddCreditCardCommand("foo.bar@gmail.com", "9999-5555-3333-1111"));
-            new PromoteCreditCardAsPrimaryCommandHandler().Handle(new PromoteCreditCardAsPrimaryCommand("foo.bar@gmail.com", "9999-5555-3333-1111"));
-
-            Console.WriteLine(string.Join(Environment.NewLine, EventStore.GetHistory().Select(x => $"{x.Timestamp} : {x.GetType().Name.Replace("Event", string.Empty)}")));
+            RunMethodOne();
+            //RunMethodTwo();
 
             Console.ReadLine();
         }
 
-        public static string[] GetCommands()
+        private static void RunMethodOne()
         {
-            var type = typeof(ICommand);
+            var runner = new RunnerOne(
+                new StartSubscriptionCommandHandler(), 
+                new AddCreditCardCommandHandler(), 
+                new RemoveCreditCardCommandHandler(), 
+                new PromoteCreditCardAsPrimaryCommandHandler(), 
+                new BecomeCustomerCommandHandler(),
+                new PurchasePayPerViewCommandHandler());
 
-            var commands = AppDomain.CurrentDomain.GetAssemblies()
+            runner.Run();
+        }
+
+        private static void RunMethodTwo()
+        {
+            var runner = new RunnerTwo(new CommandDispatcher());
+
+            runner.Run();
+        }
+
+        public static string[] GetTypes(Type type)
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p) && type != p);
 
-            return commands.Select(x => x.Name.Replace("Command", string.Empty)).ToArray();
+            return types.Select(x => x.Name.Replace("Query", string.Empty).Replace("Command", string.Empty)).ToArray();
         }
     }
 }

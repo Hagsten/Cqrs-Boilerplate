@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Write.Domain;
 
 namespace Write
 {
-    public class AccountStore
-    {
-        public static List<AccountState> AccountStates = new List<AccountState>();
-    }
-
     public static class EventStore
     {
         private static readonly List<IAccountEvent> Events = new List<IAccountEvent>();

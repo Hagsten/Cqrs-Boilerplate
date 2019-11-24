@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Persistance;
 using Write.Commands;
 using Write.Domain;
 
@@ -9,14 +10,14 @@ namespace Write.CommandHandlers
     {
         public void Handle(AddCreditCardCommand command)
         {
-            var state = AccountStore.AccountStates.SingleOrDefault(x => x.Email == command.Email);
+            var state = AccountState.FromStorage(AccountStore.AccountStates.SingleOrDefault(x => x.Email == command.Email));
 
             if (state == null)
             {
                 throw new Exception("Not found");
             }
 
-            var agg = Account.Create(state);
+            var agg = Domain.Account.Create(state);
 
             agg.AddCreditCard(command.CreditCard);
 
@@ -24,6 +25,8 @@ namespace Write.CommandHandlers
             {
                 EventStore.Add(change);
             }
+
+            AccountStore.Update(state.ToStorage());
         }
     }
 }

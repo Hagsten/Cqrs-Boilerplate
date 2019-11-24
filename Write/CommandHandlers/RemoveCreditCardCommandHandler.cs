@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Persistance;
 using Write.Commands;
 using Write.Domain;
+using Account = Write.Domain.Account;
 
 namespace Write.CommandHandlers
 {
@@ -9,7 +11,7 @@ namespace Write.CommandHandlers
     {
         public void Handle(RemoveCreditCardCommand command)
         {
-            var state = AccountStore.AccountStates.SingleOrDefault(x => x.Email == command.Email);
+            var state = AccountState.FromStorage(AccountStore.AccountStates.SingleOrDefault(x => x.Email == command.Email));
 
             if (state == null)
             {
@@ -24,6 +26,8 @@ namespace Write.CommandHandlers
             {
                 EventStore.Add(change);
             }
+
+            AccountStore.Update(state.ToStorage());
         }
     }
 }

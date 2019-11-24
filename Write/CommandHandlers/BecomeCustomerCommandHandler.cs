@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using Persistance;
 using Write.Commands;
 using Write.Domain;
+using Account = Write.Domain.Account;
 
 namespace Write.CommandHandlers
 {
@@ -8,7 +10,7 @@ namespace Write.CommandHandlers
     {
         public void Handle(BecomeCustomerCommand command)
         {
-            var state = AccountStore.AccountStates.SingleOrDefault(x => x.Email == command.Email) ?? new AccountState();
+            var state = AccountState.FromStorage(AccountStore.AccountStates.SingleOrDefault(x => x.Email == command.Email)) ?? new AccountState();
 
             var agg = Account.Create(state);
 
@@ -19,7 +21,7 @@ namespace Write.CommandHandlers
                 EventStore.Add(change);
             }
 
-            AccountStore.AccountStates.Add(state);
+            AccountStore.AccountStates.Add(state.ToStorage());
         }
     }
 }
