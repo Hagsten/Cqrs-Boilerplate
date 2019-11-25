@@ -21,8 +21,8 @@ namespace CqrsLunchAndLearn
 
             Console.ForegroundColor = ConsoleColor.White;
 
-            RunMethodOne();
-            //RunMethodTwo();
+            //RunMethodOne();
+            RunMethodTwo();
 
             Console.ReadLine();
         }

@@ -11,7 +11,28 @@ namespace Write.Domain
         public string Username { get; private set; }
         public List<Guid> ActivePayPerViews { get; private set; }
         public List<CreditCard> CreditCards { get; private set; }
-        public Subscription ActiveSubscription { get; set; }
+        public Subscription ActiveSubscription { get; private set; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public AccountState()
         {

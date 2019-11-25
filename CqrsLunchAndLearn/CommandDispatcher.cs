@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Write;
+using Write.CommandHandlers;
 
 namespace CqrsLunchAndLearn
 {
@@ -36,7 +37,9 @@ namespace CqrsLunchAndLearn
 
             dynamic instance = Activator.CreateInstance(type);
 
-            instance.Handle(command);
+            var loggingCommandHandler = new LoggingCommandHandler<TCommand>(instance);
+
+            loggingCommandHandler.Handle(command);
         }
     }
 }
