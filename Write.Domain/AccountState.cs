@@ -119,7 +119,7 @@ namespace Write.Domain
 
         public void Mutate(IAccountEvent e)
         {
-            EventRedirector.ToWhen(this, e);
+            this.When(e as dynamic);
         }
 
         public class CreditCard
